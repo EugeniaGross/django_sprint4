@@ -67,16 +67,17 @@ class PostDetailView(DetailView):
     template_name = 'blog/detail.html'
     pk_url_kwarg = 'post_id'
     queryset = Post.published_posts.select_related(
-            'location',
-            'author',
-            'category'
-        )
+        'location',
+        'author',
+        'category'
+    )
 
     def get_object(self, queryset=None):
-        post = get_object_or_404(Post.objects.select_related(
-            'location',
-            'author',
-            'category'
+        post = get_object_or_404(
+            Post.objects.select_related(
+                'location',
+                'author',
+                'category'
             ),
             pk=self.kwargs['post_id']
         )
