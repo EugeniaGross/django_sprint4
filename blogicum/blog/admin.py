@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Location, Post
+from .models import Comment, Category, Location, Post
 
 
 @admin.register(Post)
@@ -19,9 +19,17 @@ class PostAdmin(admin.ModelAdmin):
         'is_published',
         'pub_date'
     )
-    search_fields = ('title',)
-    list_filter = ('author', 'category', 'location')
-    list_display_links = ('title',)
+    search_fields = (
+        'title',
+    )
+    list_filter = (
+        'author',
+        'category',
+        'location'
+    )
+    list_display_links = (
+        'title',
+    )
     empty_value_display = 'Не задано'
 
 
@@ -37,9 +45,15 @@ class CategoryAdmin(admin.ModelAdmin):
     list_editable = (
         'is_published',
     )
-    search_fields = ('title',)
-    list_filter = ('slug',)
-    list_display_links = ('title',)
+    search_fields = (
+        'title',
+    )
+    list_filter = (
+        'slug',
+    )
+    list_display_links = (
+        'title',
+    )
 
 
 @admin.register(Location)
@@ -54,5 +68,32 @@ class LocationAdmin(admin.ModelAdmin):
         'is_published',
     )
 
-    search_fields = ('name',)
-    list_display_links = ('name',)
+    search_fields = (
+        'name',
+    )
+    list_display_links = (
+        'name',
+    )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'text',
+        'created_at',
+        'post',
+    )
+    list_editable = (
+        'text',
+    )
+    search_fields = (
+        'author',
+        'post',
+    )
+    list_filter = (
+        'author',
+    )
+    list_display_links = (
+        'author',
+    )

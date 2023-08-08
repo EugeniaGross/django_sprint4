@@ -11,7 +11,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-COUNT_POSTS = 5
+COUNT_POSTS = 10
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static_dev'

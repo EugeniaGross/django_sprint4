@@ -6,18 +6,13 @@ app_name = 'blog'
 
 urlpatterns = [
     path(
-        '',
-        views.index,
-        name='index'
-    ),
-    path(
         'profile/edit/',
         views.ProfileUpdateView.as_view(),
         name='edit_profile'
     ),
     path(
-        'profile/<slug:username>/',
-        views.user_profile,
+        'profile/<str:username>/',
+        views.UserListVieW.as_view(),
         name='profile'
     ),
     path(
@@ -57,7 +52,12 @@ urlpatterns = [
     ),
     path(
         'category/<slug:category_slug>/',
-        views.category_posts,
+        views.CategoryListView.as_view(),
         name='category_posts'
-    )
+    ),
+    path(
+        '',
+        views.IndexListView.as_view(),
+        name='index'
+    ),
 ]
