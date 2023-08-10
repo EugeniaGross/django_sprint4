@@ -4,6 +4,7 @@ from django.utils import timezone
 
 User = get_user_model()
 
+
 class CreatedPublishedModel(models.Model):
     is_published = models.BooleanField(
         'Опубликовано',
