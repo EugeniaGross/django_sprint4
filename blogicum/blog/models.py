@@ -2,9 +2,21 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from core.models import CreatedPublishedModel
-
 User = get_user_model()
+
+class CreatedPublishedModel(models.Model):
+    is_published = models.BooleanField(
+        'Опубликовано',
+        default=True,
+        help_text='Снимите галочку, чтобы скрыть публикацию.'
+    )
+    created_at = models.DateTimeField(
+        'Добавлено',
+        auto_now_add=True
+    )
+
+    class Meta:
+        abstract = True
 
 
 class PostManager(models.Manager):

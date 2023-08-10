@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Comment, Category, Location, Post
+from .models import Category, Comment, Location, Post
 
 
 @admin.register(Post)

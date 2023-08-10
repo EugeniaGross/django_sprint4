@@ -35,18 +35,18 @@ class IndexListView(
     ListView
 ):
     template_name = 'blog/index.html'
-    ordering = '-pub_date'
     paginate_by = settings.COUNT_POSTS
     queryset = get_published_posts(
     ).annotate(
         comment_count=Count("comments")
+    ).order_by(
+        '-pub_date'
     )
 
 
 class CategoryListView(
     ListView
 ):
-    model = Post
     template_name = 'blog/category.html'
     paginate_by = settings.COUNT_POSTS
 
@@ -90,13 +90,13 @@ class PostDetailView(
     def get_object(self, queryset=None):
         post = get_object_or_404(
             get_posts(),
-            pk=self.kwargs['post_id']
+            pk=self.kwargs[self.pk_url_kwarg]
         )
         if post.author == self.request.user:
             return post
         return get_object_or_404(
             get_published_posts(),
-            pk=self.kwargs['post_id']
+            pk=self.kwargs[self.pk_url_kwarg]
         )
 
     def get_context_data(self, **kwargs):
@@ -111,8 +111,8 @@ class PostDetailView(
 
 
 class PostCreateView(
-    PostMixin,
     LoginRequiredMixin,
+    PostMixin,
     CreateView
 ):
     model = Post
@@ -126,10 +126,10 @@ class PostCreateView(
 
 
 class PostUpdateView(
-    PostMixin,
-    PostUpdateDeleteMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
+    PostMixin,
+    PostUpdateDeleteMixin,
     UpdateView
 ):
     def test_func(self):
@@ -138,20 +138,20 @@ class PostUpdateView(
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return redirect(settings.LOGIN_URL)
-        return redirect('blog:post_detail', self.kwargs['post_id'])
+        return redirect('blog:post_detail', self.kwargs[self.pk_url_kwarg])
 
     def get_success_url(self):
         return reverse_lazy(
             'blog:post_detail',
-            args=[self.kwargs['post_id']]
+            args=[self.kwargs[self.pk_url_kwarg]]
         )
 
 
 class PostDeleteView(
-    PostMixin,
-    PostUpdateDeleteMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
+    PostMixin,
+    PostUpdateDeleteMixin,
     DeleteView
 ):
     def test_func(self):
@@ -160,7 +160,7 @@ class PostDeleteView(
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return redirect(settings.LOGIN_URL)
-        return redirect('blog:post_detail', self.kwargs['post_id'])
+        return redirect('blog:post_detail', self.kwargs[self.pk_url_kwarg])
 
     def get_success_url(self):
         return reverse_lazy(
@@ -177,7 +177,6 @@ class PostDeleteView(
 class UserListVieW(
     ListView
 ):
-    model = Post
     template_name = 'blog/profile.html'
     paginate_by = settings.COUNT_POSTS
 
@@ -190,7 +189,16 @@ class UserListVieW(
         ).order_by(
             '-pub_date'
         )
-        return queryset
+        if str(self.request.user) == self.kwargs['username']:
+            return queryset
+        return get_published_posts(
+        ).filter(
+            author__username=self.kwargs['username']
+        ).annotate(
+            comment_count=Count("comments")
+        ).order_by(
+            '-pub_date'
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -202,8 +210,8 @@ class UserListVieW(
 
 
 class CommentCreateView(
-    CommentMixin,
     LoginRequiredMixin,
+    CommentMixin,
     CreateView
 ):
     def form_valid(self, form):
@@ -222,9 +230,9 @@ class CommentCreateView(
 
 
 class CommentUpdateView(
-    CommentMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
+    CommentMixin,
     UpdateView
 ):
     pk_url_kwarg = "comment_id"
@@ -245,9 +253,9 @@ class CommentUpdateView(
 
 
 class CommentDeleteView(
-    CommentMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
+    CommentMixin,
     DeleteView
 ):
     pk_url_kwarg = "comment_id"
